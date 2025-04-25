@@ -20,6 +20,10 @@ def parse_ingredient(raw):
         amount = 1
         unit = ""
         name = raw
+
+    # 🔍 Anahtar kelime sadeleştirme (son kelimeyi al)
+    name = name.split()[-1]
+
     return {"amount": amount, "unit": unit, "name": name}
 
 def index(request):

@@ -5,6 +5,7 @@ import time
 import re
 
 def get_cheapest_price_from_market(keyword):
+    print(f"🔍 Fiyat aranıyor: {keyword}")
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
@@ -12,7 +13,7 @@ def get_cheapest_price_from_market(keyword):
     try:
         url = f"https://marketfiyati.org.tr/ara?q={keyword}"
         driver.get(url)
-        time.sleep(3)
+        time.sleep(5)
 
         product_cards = driver.find_elements(By.CSS_SELECTOR, "tubitak-product-summary")
         prices = []
