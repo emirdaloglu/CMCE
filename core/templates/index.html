@@ -118,7 +118,7 @@
       body: JSON.stringify({ mealName })
     })
     .then(r => r.json())
-    .then(data => {
+    .then(data => { console.log("📦 Gelen veri:", data);
       if (data.error) {
         return document.getElementById('result').innerHTML =
           `<div class="alert alert-danger mt-4">❌ ${data.error}</div>`;
@@ -148,9 +148,9 @@
   });
 
   function setMeal(name){
-    document.getElementById('mealName').value = name;
-    document.getElementById('mealForm').dispatchEvent(new Event('submit'));
-  }
+   document.getElementById('mealName').value = name;
+  // Artık sadece inputa yazar, hesaplama yapmaz
+}
 </script>
 </body>
 </html>
