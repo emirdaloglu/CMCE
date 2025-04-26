@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -15,6 +16,12 @@
     .custom-card { background-color:#fff7f0; }
     .card-title, .card-body, .card-header { color:#333; background:#fff7f0; }
     .dropdown-item:hover { background-color:#ffe0cc; }
+    .custom-register-btn:hover {
+    background-color: white;
+    color: #dc3545;
+    border-color: white;
+}
+
   </style>
 </head>
 <body>
@@ -47,7 +54,17 @@
           </ul>
         </li>
       </ul>
-      <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">Giriş Yap</button>
+      <div class="d-flex">
+        {% if user.is_authenticated %}
+        <span class="navbar-text me-3 text-white">
+          Merhaba, {{ user.username|before_at }}!
+        </span>
+          <a href="/logout/" class="btn btn-outline-light">Çıkış Yap</a>
+        {% else %}
+          <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
+          <a href="/register/" class="btn btn-outline-light custom-register-btn">Kayıt Ol</a>
+        {% endif %}
+      </div>
     </div>
   </div>
 </nav>

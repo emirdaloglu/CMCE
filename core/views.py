@@ -6,7 +6,45 @@ from .malzeme_resim_scraper import get_recipe_data
 from .en_ucuz_fiyat import get_cheapest_price_from_market
 from django.views.decorators.csrf import csrf_exempt
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from .models import MealHistory
+
 # Create your views here.
+
+def register_view(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+
+        if "@" not in email:
+            return render(request, 'register.html', {'error': 'Geçerli bir e-mail adresi giriniz.'})
+
+        if User.objects.filter(username=email).exists():
+            return render(request, 'register.html', {'error': 'Bu e-posta zaten kayıtlı.'})
+
+        user = User.objects.create_user(username=email, email=email, password=password)
+        login(request, user)
+        return redirect('/')
+    return render(request, 'register.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            return render(request, 'login.html', {'error': 'Kullanıcı adı veya şifre hatalı.'})
+    return render(request, 'login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
 
 def parse_ingredient(raw):
     parts = raw.split()
@@ -42,7 +80,10 @@ def favorites(request):
     return render(request, 'favorites.html')
 
 def history(request):
-    return render(request, 'history.html')
+    if not request.user.is_authenticated:
+        return redirect('/login/')
+    histories = MealHistory.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'history.html', {'histories': histories})
 
 @csrf_exempt
 def calculate_with_cost(request):
@@ -69,7 +110,16 @@ def calculate_with_cost(request):
                     print("➕ Eklenen fiyat:", price, "Toplam:", total_cost)
                 else:
                     ing['cost'] = None
-                print("✅ JSON olarak frontend'e dönen veri:", {
+
+            # 📝 Kullanıcı giriş yapmışsa geçmişe kaydet
+            if request.user.is_authenticated:
+                MealHistory.objects.create(
+                    user=request.user,
+                    meal_name=meal_name,
+                    total_cost=round(total_cost, 2)
+                )
+
+            print("✅ JSON olarak frontend'e dönen veri:", {
                 'meal': meal_name,
                 'ingredients': ingredients,
                 'total_cost': round(total_cost, 2),

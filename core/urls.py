@@ -8,5 +8,11 @@ urlpatterns = [
     path('et-yemekleri/', views.et_yemekleri, name='et_yemekleri'),
     path('favorites/', views.favorites, name='favorites'),
     path('history/', views.history, name='history'),
+
+    
+    path('register/', views.register_view, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+
     path('calculate/with-cost', views.calculate_with_cost, name='calculate_with_cost'),
 ]

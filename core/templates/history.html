@@ -72,16 +72,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Menemen</td>
-          <td>2025-04-21</td>
-          <td>28.75</td>
-        </tr>
-        <tr>
-          <td>Karnıyarık</td>
-          <td>2025-04-20</td>
-          <td>55.40</td>
-        </tr>
+        {% for item in histories %}
+          <tr>
+            <td>{{ item.meal_name }}</td>
+            <td>{{ item.date|date:"d.m.Y H:i" }}</td>
+            <td>{{ item.total_cost }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3" class="text-center">Hiç hesaplama yapılmamış.</td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
