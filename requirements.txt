@@ -1,0 +1,5 @@
+Django>=4.2,<5.0
+selenium==4.7.2
+requests
+psycopg2-binary
+beautifulsoup4

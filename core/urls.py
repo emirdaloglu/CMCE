@@ -15,4 +15,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
 
     path('calculate/with-cost', views.calculate_with_cost, name='calculate_with_cost'),
+    path('add-to-favorites/', views.add_to_favorites, name='add_to_favorites'),
+    path('remove-favorite/', views.remove_favorite, name='remove_favorite'),
+
 ]

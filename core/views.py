@@ -2,16 +2,19 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 
-from .malzeme_resim_scraper import get_recipe_data
-from .en_ucuz_fiyat import get_cheapest_price_from_market
+from core.scraper import get_recipe_data, get_cheapest_price_from_market
 from django.views.decorators.csrf import csrf_exempt
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import MealHistory
+from .models import Favorite
 
-# Create your views here.
+
+
+
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -68,6 +71,9 @@ def index(request):
     return render(request, 'index.html')
 
 def add_recipe(request):
+    if not request.user.is_authenticated:
+        return redirect('/login/')
+    
     return render(request, 'add_recipe.html')
 
 def corbalar(request):
@@ -77,7 +83,11 @@ def et_yemekleri(request):
     return render(request, 'et_yemekleri.html')
 
 def favorites(request):
-    return render(request, 'favorites.html')
+    if request.user.is_authenticated:
+        favorites = Favorite.objects.filter(user=request.user).order_by('-date_added')
+        return render(request, 'favorites.html', {'favorites': favorites})
+    else:
+        return redirect('/login/')
 
 def history(request):
     if not request.user.is_authenticated:
@@ -139,3 +149,36 @@ def calculate_with_cost(request):
             return JsonResponse({'error': str(e)})
 
     return JsonResponse({'error': 'Invalid request method.'})
+
+@csrf_exempt
+def add_to_favorites(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        meal_name = body.get('mealName')
+        total_cost = body.get('totalCost')
+
+        if request.user.is_authenticated:
+            Favorite.objects.create(
+                user=request.user,
+                meal_name=meal_name,
+                total_cost=total_cost
+            )
+            return JsonResponse({'message': 'Favorilere eklendi.'})
+        else:
+            return JsonResponse({'error': 'Giriş yapmanız gerekiyor.'}, status=401)
+
+    return JsonResponse({'error': 'Geçersiz istek.'}, status=400)
+
+@csrf_exempt
+def remove_favorite(request):
+    if request.method == 'POST':
+        favorite_id = request.POST.get('favorite_id')
+        if favorite_id:
+            try:
+                fav = Favorite.objects.get(id=favorite_id, user=request.user)
+                fav.delete()
+            except Favorite.DoesNotExist:
+                pass  # Zaten yoksa hata verme
+        return redirect('/favorites/')
+    else:
+        return redirect('/')

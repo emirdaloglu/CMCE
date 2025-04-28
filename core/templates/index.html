@@ -1,5 +1,6 @@
 {% load static %}
 {% load custom_filters %}
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -7,6 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CMCE - CheapMakeCheapEat</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
   <style>
     body { background: linear-gradient(135deg, #ff5722, #ff7043); color: #fff; }
     .navbar-brand strong { font-size:1.6rem; }
@@ -17,13 +20,13 @@
     .card-title, .card-body, .card-header { color:#333; background:#fff7f0; }
     .dropdown-item:hover { background-color:#ffe0cc; }
     .custom-register-btn:hover {
-    background-color: white;
-    color: #dc3545;
-    border-color: white;
-}
-
+      background-color: white;
+      color: #dc3545;
+      border-color: white;
+    }
   </style>
 </head>
+
 <body>
 
 <!-- Navbar -->
@@ -36,6 +39,7 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown">
@@ -56,14 +60,15 @@
       </ul>
       <div class="d-flex">
         {% if user.is_authenticated %}
-        <span class="navbar-text me-3 text-white">
-          Merhaba, {{ user.username|before_at }}!
-        </span>
-          <a href="/logout/" class="btn btn-outline-light">Çıkış Yap</a>
+          <span class="navbar-text me-3 text-white">
+            Merhaba, {{ user.username|before_at }}!
+          </span>
+          <a href="/logout/" class="btn btn-outline-light me-2">Çıkış Yap</a>
         {% else %}
           <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
           <a href="/register/" class="btn btn-outline-light custom-register-btn">Kayıt Ol</a>
         {% endif %}
+        <a href="/chat/" class="btn btn-outline-light ms-2">🤖 Sohbet</a>
       </div>
     </div>
   </div>
@@ -82,35 +87,30 @@
 <div class="container" id="popular-recipes">
   <h4 class="text-white mb-3">Popüler Tarifler 🍴</h4>
   <div class="row g-3">
-
     <div class="col-6 col-md-3">
       <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Karnıyarık')">
         <img src="{% static 'karnıyarık.jpg' %}" class="card-img-top meal-image" alt="Karnıyarık">
         <div class="card-body text-center"><h5 class="card-title">Karnıyarık</h5></div>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Menemen')">
         <img src="{% static 'menemen.jpg' %}" class="card-img-top meal-image" alt="Menemen">
         <div class="card-body text-center"><h5 class="card-title">Menemen</h5></div>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Mercimek Çorbası')">
         <img src="{% static 'mercimek çorbası.jpg' %}" class="card-img-top meal-image" alt="Mercimek Çorbası">
         <div class="card-body text-center"><h5 class="card-title">Mercimek Çorbası</h5></div>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Izgara Tavuk')">
         <img src="{% static 'ızgara tavuk.jpg' %}" class="card-img-top meal-image" alt="Izgara Tavuk">
         <div class="card-body text-center"><h5 class="card-title">Izgara Tavuk</h5></div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -122,39 +122,47 @@
   Made with Hasan Berk Demir &amp; Muhammed Emir Daloğlu by CMCE Team – 2025
 </footer>
 
+
 <!-- Script -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
   document.getElementById('mealForm').addEventListener('submit', e => {
     e.preventDefault();
     const mealName = document.getElementById('mealName').value;
-
+    document.getElementById('result').innerHTML = `
+      <div class="alert alert-info mt-4">⏳ Tarif ve fiyatlar yükleniyor...</div>
+    `;
     fetch('/calculate/with-cost', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ mealName })
     })
     .then(r => r.json())
-    .then(data => { console.log("📦 Gelen veri:", data);
+    .then(data => { 
+      console.log("📦 Gelen veri:", data);
       if (data.error) {
         return document.getElementById('result').innerHTML =
           `<div class="alert alert-danger mt-4">❌ ${data.error}</div>`;
       }
-
       const items = data.ingredients.map(i => `
         <li class="list-group-item">
           ${i.amount} ${i.unit} ${i.name} → 
           ${i.cost !== null ? i.cost.toFixed(2) + '₺' : '??₺'}
         </li>`).join('');
-
       document.getElementById('result').innerHTML = `
         <div class="card shadow-sm mt-4">
           <img src="${data.image}" class="card-img-top" alt="${data.meal}">
-          <div class="card-header bg-success text-white">
+          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">${data.meal}</h5>
           </div>
           <ul class="list-group list-group-flush">${items}</ul>
-          <div class="card-footer fw-bold">Toplam Maliyet: ${data.total_cost}₺</div>
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <div class="fw-bold">Toplam Maliyet: ${data.total_cost}₺</div>
+            <button class="btn btn-outline-danger btn-sm" onclick="addToFavorites('${data.meal}', ${data.total_cost})">
+              <i class="bi bi-heart-fill"></i> Favorilere Ekle
+            </button>
+          </div>
         </div>
       `;
     })
@@ -165,9 +173,30 @@
   });
 
   function setMeal(name){
-   document.getElementById('mealName').value = name;
-  // Artık sadece inputa yazar, hesaplama yapmaz
-}
+    document.getElementById('mealName').value = name;
+  }
+
+  function addToFavorites(mealName, totalCost) {
+    fetch('/add-to-favorites/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ mealName, totalCost })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message) {
+        alert('✅ Tarif favorilere eklendi!');
+      } else {
+        alert('⚠️ Giriş yapmanız gerekiyor.');
+      }
+    })
+    .catch(error => {
+      console.error('Favori ekleme hatası:', error);
+    });
+  }
+
+ 
 </script>
+
 </body>
 </html>

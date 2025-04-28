@@ -13,3 +13,13 @@ class MealHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.meal_name} - {self.total_cost}₺"
+    
+    
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    meal_name = models.CharField(max_length=255)
+    total_cost = models.FloatField(default=0)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.meal_name}"
