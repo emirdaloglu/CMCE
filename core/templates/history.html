@@ -39,17 +39,12 @@
     </button>
     <div class="collapse navbar-collapse" id="navContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Tarifler</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/corbalar/">Çorbalar</a></li>
-            <li><a class="dropdown-item" href="/et-yemekleri/">Et Yemekleri</a></li>
-          </ul>
+        <li class="nav-item">
+          <a class="nav-link" href="/tarifler/">Tarifler</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Özellikler</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/add-recipe/">Tarif Ekle</a></li>
             <li><a class="dropdown-item" href="/favorites/">Favori Tarifler</a></li>
             <li><a class="dropdown-item" href="/history/">Geçmiş Maliyetler</a></li>
           </ul>
@@ -57,22 +52,21 @@
       </ul>
 
       {% if user.is_authenticated %}
-  <span class="navbar-text me-3 text-white">
-    Merhaba, {{ user.username|before_at }}!
-  </span>
-  <a href="/logout/" class="btn btn-outline-light me-2">Çıkış Yap</a>
-{% else %}
-  <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
-  <a href="/register/" class="btn btn-outline-light custom-register-btn">Kayıt Ol</a>
-{% endif %}
+        <span class="navbar-text me-3 text-white">
+          Merhaba, {{ user.username|before_at }}!
+        </span>
+        <a href="/logout/" class="btn btn-outline-light me-2">Çıkış Yap</a>
+      {% else %}
+        <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
+        <a href="/register/" class="btn btn-outline-light custom-register-btn">Kayıt Ol</a>
+      {% endif %}
 
-<!-- 🤖 Chatbot Butonu -->
-<button class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#chatModal">
-  🤖 Sohbet
-</button>
-</div>
-</div>
-</div>
+      <a href="/chatbot/" class="btn btn-outline-light ms-2 d-flex align-items-center">
+        <img src="https://img.icons8.com/?size=24&id=t3z86GnXSIyW&format=png&color=ffffff" alt="Chatbot" style="width: 20px; height: 20px; margin-right: 6px;">
+        Sohbet
+      </a>
+    </div>
+  </div>
 </nav>
 
 <!-- Geçmiş Maliyet Listesi -->
@@ -112,4 +106,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

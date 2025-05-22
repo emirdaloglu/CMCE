@@ -17,5 +17,7 @@ urlpatterns = [
     path('calculate/with-cost', views.calculate_with_cost, name='calculate_with_cost'),
     path('add-to-favorites/', views.add_to_favorites, name='add_to_favorites'),
     path('remove-favorite/', views.remove_favorite, name='remove_favorite'),
-
+    path('chatbot/', views.chatbot_view, name='chatbot'),
+    path('chatbot-response/', views.chatbot_response, name='chatbot_response'),
+    path('tarifler/', views.tarifler, name='tarifler'),
 ]

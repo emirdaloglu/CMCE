@@ -9,6 +9,7 @@
   <title>CMCE - CheapMakeCheapEat</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
     body { background: linear-gradient(135deg, #ff5722, #ff7043); color: #fff; }
@@ -23,6 +24,14 @@
       background-color: white;
       color: #dc3545;
       border-color: white;
+    }
+    .sandglass-animate {
+      display: inline-block;
+      animation: sandglass-spin 1s linear infinite;
+    }
+    @keyframes sandglass-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -42,17 +51,12 @@
 
     <div class="collapse navbar-collapse" id="navContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Tarifler</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/corbalar/">Çorbalar</a></li>
-            <li><a class="dropdown-item" href="/et-yemekleri/">Et Yemekleri</a></li>
-          </ul>
+        <li class="nav-item">
+          <a class="nav-link" href="/tarifler/">Tarifler</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Özellikler</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/add-recipe/">Tarif Ekle</a></li>
             <li><a class="dropdown-item" href="/favorites/">Favori Tarifler</a></li>
             <li><a class="dropdown-item" href="/history/">Geçmiş Maliyetler</a></li>
           </ul>
@@ -68,7 +72,10 @@
           <a href="/login/" class="btn btn-outline-light me-2">Giriş Yap</a>
           <a href="/register/" class="btn btn-outline-light custom-register-btn">Kayıt Ol</a>
         {% endif %}
-        <a href="/chat/" class="btn btn-outline-light ms-2">🤖 Sohbet</a>
+        <a href="/chatbot/" class="btn btn-outline-light ms-2 d-flex align-items-center">
+          <img src="https://img.icons8.com/?size=24&id=t3z86GnXSIyW&format=png&color=ffffff" alt="Chatbot" style="width: 20px; height: 20px; margin-right: 6px;">
+          Sohbet
+        </a>
       </div>
     </div>
   </div>
@@ -88,15 +95,15 @@
   <h4 class="text-white mb-3">Popüler Tarifler 🍴</h4>
   <div class="row g-3">
     <div class="col-6 col-md-3">
-      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Karnıyarık')">
-        <img src="{% static 'karnıyarık.jpg' %}" class="card-img-top meal-image" alt="Karnıyarık">
-        <div class="card-body text-center"><h5 class="card-title">Karnıyarık</h5></div>
+      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Acıbadem Kurabiye')">
+        <img src="{% static 'acibadem-kurabiye.jpg' %}" class="card-img-top meal-image" alt="Acıbadem Kurabiye">
+        <div class="card-body text-center"><h5 class="card-title">Acıbadem Kurabiye</h5></div>
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Menemen')">
-        <img src="{% static 'menemen.jpg' %}" class="card-img-top meal-image" alt="Menemen">
-        <div class="card-body text-center"><h5 class="card-title">Menemen</h5></div>
+      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Patatesli Çıtır Börek')">
+        <img src="{% static 'patatesli-citir-borek-tarifi.jpg' %}" class="card-img-top meal-image" alt="Patatesli Çıtır Börek">
+        <div class="card-body text-center"><h5 class="card-title">Patatesli Çıtır Börek</h5></div>
       </div>
     </div>
     <div class="col-6 col-md-3">
@@ -111,6 +118,30 @@
         <div class="card-body text-center"><h5 class="card-title">Izgara Tavuk</h5></div>
       </div>
     </div>
+    <div class="col-6 col-md-3">
+      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Brownie Kurabiye')">
+        <img src="{% static 'brownie-kurabiye-tarifi.jpg' %}" class="card-img-top meal-image" alt="Brownie Kurabiye">
+        <div class="card-body text-center"><h5 class="card-title">Brownie Kurabiye</h5></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Şehriyeli Pirinç Pilavı')">
+        <img src="{% static 'sehriyeli-pirinc-pilavi.jpg' %}" class="card-img-top meal-image" alt="Şehriyeli Pirinç Pilavı">
+        <div class="card-body text-center"><h5 class="card-title">Şehriyeli Pirinç Pilavı</h5></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Un Kurabiyesi')">
+        <img src="{% static 'un-kurabiyesi.jpg' %}" class="card-img-top meal-image" alt="Un Kurabiyesi">
+        <div class="card-body text-center"><h5 class="card-title">Un Kurabiyesi</h5></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card meal-card shadow-sm custom-card" onclick="setMeal('Dereotlu Poğaça')">
+        <img src="{% static 'dereotlu-pogaca.jpg' %}" class="card-img-top meal-image" alt="Dereotlu Poğaça">
+        <div class="card-body text-center"><h5 class="card-title">Dereotlu Poğaça</h5></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -119,7 +150,7 @@
 
 <!-- Footer -->
 <footer class="text-center text-light mt-5 mb-3" style="font-size:.9em">
-  Made with Hasan Berk Demir &amp; Muhammed Emir Daloğlu by CMCE Team – 2025
+  Made with Hasan Berk Demir &amp; Muhammed Emir Daloğlu by CMCE Team – 2025
 </footer>
 
 
@@ -131,45 +162,63 @@
     e.preventDefault();
     const mealName = document.getElementById('mealName').value;
     document.getElementById('result').innerHTML = `
-      <div class="alert alert-info mt-4">⏳ Tarif ve fiyatlar yükleniyor...</div>
+      <div class="alert alert-info mt-4"><span class="sandglass-animate">⏳</span> Tarif ve fiyatlar yükleniyor...</div>
     `;
     fetch('/calculate/with-cost', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ mealName })
-    })
-    .then(r => r.json())
-    .then(data => { 
-      console.log("📦 Gelen veri:", data);
-      if (data.error) {
-        return document.getElementById('result').innerHTML =
-          `<div class="alert alert-danger mt-4">❌ ${data.error}</div>`;
-      }
-      const items = data.ingredients.map(i => `
-        <li class="list-group-item">
-          ${i.amount} ${i.unit} ${i.name} → 
-          ${i.cost !== null ? i.cost.toFixed(2) + '₺' : '??₺'}
-        </li>`).join('');
-      document.getElementById('result').innerHTML = `
-        <div class="card shadow-sm mt-4">
-          <img src="${data.image}" class="card-img-top" alt="${data.meal}">
-          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">${data.meal}</h5>
-          </div>
-          <ul class="list-group list-group-flush">${items}</ul>
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <div class="fw-bold">Toplam Maliyet: ${data.total_cost}₺</div>
-            <button class="btn btn-outline-danger btn-sm" onclick="addToFavorites('${data.meal}', ${data.total_cost})">
-              <i class="bi bi-heart-fill"></i> Favorilere Ekle
-            </button>
-          </div>
-        </div>
-      `;
-    })
-    .catch(_ => {
-      document.getElementById('result').innerHTML =
-        `<div class="alert alert-warning mt-4">⚠️ Bir hata oluştu.</div>`;
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({ mealName })
+})
+.then(r => {
+  if (r.status === 401) {
+    return r.json().then(data => {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: data.error || 'Giriş yapmanız gerekiyor.',
+        showConfirmButton: false,
+        timer: 2000,
+        background: '#ffc107',
+        color: '#000'
+      });
+      throw new Error("Unauthorized");
     });
+  }
+  return r.json();
+})
+.then(data => { 
+  console.log("📦 Gelen veri:", data);
+  if (data.error) {
+    return document.getElementById('result').innerHTML =
+      `<div class="alert alert-danger mt-4">❌ ${data.error}</div>`;
+  }
+  const items = data.ingredients.map(i => `
+    <li class="list-group-item">
+      ${i.amount} ${i.unit} ${i.name} → 
+      ${i.cost !== null ? i.cost.toFixed(2) + '₺' : '??₺'}
+    </li>`).join('');
+  document.getElementById('result').innerHTML = `
+    <div class="card shadow-sm mt-4">
+      <img src="${data.image}" class="card-img-top" alt="${data.meal}">
+      <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">${data.meal}</h5>
+      </div>
+      <ul class="list-group list-group-flush">${items}</ul>
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div class="fw-bold">Toplam Maliyet: ${data.total_cost}₺</div>
+        <button class="btn btn-outline-danger btn-sm" onclick="addToFavorites('${data.meal}', ${data.total_cost})">
+          <i class="bi bi-heart-fill"></i> Favorilere Ekle
+        </button>
+      </div>
+    </div>
+  `;
+})
+.catch(_ => {
+  document.getElementById('result').innerHTML =
+    `<div class="alert alert-warning mt-4">⚠️ Bir hata oluştu.</div>`;
+});
+
   });
 
   function setMeal(name){
@@ -177,25 +226,67 @@
   }
 
   function addToFavorites(mealName, totalCost) {
-    fetch('/add-to-favorites/', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ mealName, totalCost })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message) {
-        alert('✅ Tarif favorilere eklendi!');
-      } else {
-        alert('⚠️ Giriş yapmanız gerekiyor.');
-      }
-    })
-    .catch(error => {
-      console.error('Favori ekleme hatası:', error);
+  fetch('/add-to-favorites/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ mealName, totalCost })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '✅ Tarif favorilere eklendi!',
+        showConfirmButton: false,
+        timer: 2000,
+        background: '#dc3545',
+        color: '#fff',
+      });
+    } else if (data.already) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'info',
+        title: 'ℹ️ Bu tarif zaten favorilerde.',
+        showConfirmButton: false,
+        timer: 2000,
+        background: '#6c757d',
+        color: '#fff',
+      });
+    } else {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'warning',
+        title: '⚠️ Giriş yapmanız gerekiyor.',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
+  })
+  .catch(error => {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: '❌ Hata oluştu.',
+      showConfirmButton: false,
+      timer: 2000
     });
-  }
+    console.error('Favori ekleme hatası:', error);
+  });
+}
 
- 
+  // Set mealName input from query parameter if present
+  window.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const meal = params.get('meal');
+    if (meal) {
+      document.getElementById('mealName').value = meal;
+    }
+  });
 </script>
 
 </body>

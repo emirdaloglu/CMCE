@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Ortam değişkenini ekle: chromedriver path Docker için
 ENV CHROMEDRIVER_PATH="/usr/bin/chromedriver"
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 

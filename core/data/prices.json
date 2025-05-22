@@ -1,0 +1,44 @@
+{
+  "mercimek çorbası": {
+      "mercimek": 6.80,
+      "patates": 3.00,
+      "soğan": 1.50,
+      "bulyon": 1.00,
+      "salça": 1.50,
+      "un": 0.15,
+      "yağ": 0.70
+  },
+  "karnıyarık": {
+      "patlıcan": 5.00,
+      "biber": 2.00,
+      "kıyma": 10.00,
+      "soğan": 1.50,
+      "karabiber": 2.00,
+      "tuz": 0.50,
+      "domates": 2.50,
+      "tereyağı": 1.50,
+      "salça": 1.50,
+      "yağ": 0.70,
+      "maydanoz": 1.00
+  },
+  "menemen": {
+      "yağ": 2.10,
+      "soğan": 1.50,
+      "domates": 3.50,
+      "tuz": 0.50,
+      "beyaz peynir": 3.00,
+      "maydanoz": 1.00,
+      "yumurta": 3.00,
+      "kaşar peyniri": 3.00
+  },
+  "ızgara tavuk": {
+      "tavuk": 25.00,
+      "kimyon": 1.00,
+      "karabiber": 2.00,
+      "köri": 1.00,
+      "biber": 2.00,
+      "yoğurt": 1.00,
+      "kekik": 1.00,
+      "yağ": 0.40
+  }
+}
