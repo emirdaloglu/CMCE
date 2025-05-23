@@ -13,6 +13,10 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from .models import Recipe, Ingredient
+from .utils import map_ingredient_name
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 # Redis connection
 redis_client = redis.Redis(host='cmce-redis-1', port=6379, db=0)
@@ -90,16 +94,30 @@ def create_recipe_from_data(meal_name, user=None):
 
     # Update ingredients
     for ingredient_name in data.get('ingredients', []):
-        ingredient, created = Ingredient.objects.get_or_create(
-            recipe=recipe,
-            name=ingredient_name
-        )
-        if created or not ingredient.current_price:
-            price = get_cheapest_price_from_market(ingredient_name, meal_name)
-            if price:
-                ingredient.current_price = price
-                ingredient.last_price_update = datetime.now()
-                ingredient.save()
+        mapped_ingredient_name = map_ingredient_name(ingredient_name)
+        if isinstance(mapped_ingredient_name, list):
+            for single_ingredient in mapped_ingredient_name:
+                ingredient, created = Ingredient.objects.get_or_create(
+                    recipe=recipe,
+                    name=single_ingredient
+                )
+                if created or not ingredient.current_price:
+                    price = get_cheapest_price_from_market(single_ingredient, meal_name)
+                    if price:
+                        ingredient.current_price = price
+                        ingredient.last_price_update = datetime.now()
+                        ingredient.save()
+        else:
+            ingredient, created = Ingredient.objects.get_or_create(
+                recipe=recipe,
+                name=ingredient_name
+            )
+            if created or not ingredient.current_price:
+                price = get_cheapest_price_from_market(mapped_ingredient_name, meal_name)
+                if price:
+                    ingredient.current_price = price
+                    ingredient.last_price_update = datetime.now()
+                    ingredient.save()
 
     return recipe
 
@@ -165,41 +183,81 @@ def update_ingredient_prices():
     )
 
     for ingredient in ingredients:
-        price = get_cheapest_price_from_market(ingredient.name, ingredient.recipe.name)
-        if price:
-            ingredient.current_price = price
-            ingredient.last_price_update = datetime.now()
-            ingredient.save()
+        mapped_ingredient_name = map_ingredient_name(ingredient.name)
+        if isinstance(mapped_ingredient_name, list):
+            for single_ingredient in mapped_ingredient_name:
+                price = get_cheapest_price_from_market(single_ingredient, ingredient.recipe.name)
+                if price:
+                    ingredient.current_price = price
+                    ingredient.last_price_update = datetime.now()
+                    ingredient.save()
+        else:
+            price = get_cheapest_price_from_market(mapped_ingredient_name, ingredient.recipe.name)
+            if price:
+                ingredient.current_price = price
+                ingredient.last_price_update = datetime.now()
+                ingredient.save()
 
 def get_cheapest_price_from_market(product_name, meal_name=None):
-    cached = redis_client.get(f"price:{product_name}")
+    mapped_product_name = map_ingredient_name(product_name)
+    if isinstance(mapped_product_name, list):
+        # Return the minimum price among all mapped ingredients
+        prices = [get_cheapest_price_from_market(p, meal_name) for p in mapped_product_name]
+        prices = [p for p in prices if p is not None]
+        return min(prices) if prices else None
+    cached = redis_client.get(f"price:{mapped_product_name}")
     if cached:
-        print(f"📦 Found in cache (price): {product_name}")
+        print(f"📦 Found in cache (price): {mapped_product_name}")
         return float(cached)
 
-    print(f"🔍 Searching: {product_name}")
-    query = urllib.parse.quote(product_name)
+    print(f"🔍 Searching: {mapped_product_name}")
+    query = urllib.parse.quote(mapped_product_name)
     url = f"https://marketfiyati.org.tr/ara?q={query}"
 
     driver = get_driver()
     try:
         driver.get(url)
-        time.sleep(3)  # Wait for JS to load
+        try:
+            # Wait up to 10 seconds for at least one price element to appear
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "span.fw-bold.caption-16.secondary-700"))
+            )
+        except Exception as e:
+            print(f"[WAIT ERROR] Element not found in time: {e}")
+            return None
         soup = BeautifulSoup(driver.page_source, "html.parser")
         price_elements = soup.select("span.fw-bold.caption-16.secondary-700")
         if not price_elements:
-            print(f"[DEBUG] No price elements found for {product_name}. HTML snippet:\n{driver.page_source[:1000]}")
+            print(f"[DEBUG] No price elements found for {mapped_product_name}. HTML snippet:\n{driver.page_source[:1000]}")
+            return None
+
+        prices = []
         for el in price_elements:
             price_text = el.get_text(strip=True).replace("₺", "").replace(",", ".").strip()
             try:
                 price_value = float(price_text)
-                redis_client.set(f"price:{product_name}", price_value, ex=60*60*6)
-                return price_value
+                prices.append(price_value)
             except Exception:
                 continue
+
+        if prices:
+            min_price = min(prices)
+            redis_client.set(f"price:{mapped_product_name}", min_price, ex=60*60*6)
+            return min_price
+
     except Exception as e:
         print(f"⚠️ Selenium scraper error: {e}")
     finally:
         driver.quit()
 
+    return None
+
+# Retry wrapper
+def get_cheapest_price_with_retry(product_name, meal_name=None, retries=3):
+    for attempt in range(retries):
+        price = get_cheapest_price_from_market(product_name, meal_name)
+        if price is not None:
+            return price
+        print(f"Deneme {attempt+1} başarısız, tekrar deneniyor...")
+        time.sleep(2)
     return None

@@ -75,7 +75,8 @@ def parse_ingredient(raw):
 
 
 def index(request):
-    return render(request, 'index.html')
+    recipes = Recipe.objects.all()[:12]
+    return render(request, 'index.html', {'recipes': recipes})
 
 
 def add_recipe(request):
@@ -95,7 +96,8 @@ def et_yemekleri(request):
 def favorites(request):
     if request.user.is_authenticated:
         favorites = Favorite.objects.filter(user=request.user).order_by('-date_added')
-        return render(request, 'favorites.html', {'favorites': favorites})
+        recipes = Recipe.objects.all()
+        return render(request, 'favorites.html', {'favorites': favorites, 'recipes': recipes})
     else:
         return redirect('/login/')
 
@@ -142,7 +144,7 @@ def calculate_with_cost(request):
                     total_cost += ingredient_data['cost']
                 ingredients.append(ingredient_data)
 
-            # Save to history
+            # Save to history (döngü DIŞINDA)
             MealHistory.objects.create(
                 user=request.user,
                 meal_name=meal_name,
@@ -155,6 +157,7 @@ def calculate_with_cost(request):
                 'total_cost': round(total_cost, 2),
                 'image': recipe.image.url if recipe.image else recipe.image_url or '',
                 'description': '',
+                'url': recipe.url or '',
             })
 
         except Exception as e:

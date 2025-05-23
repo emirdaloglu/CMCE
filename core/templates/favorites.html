@@ -88,7 +88,11 @@
             <td>{{ fav.meal_name }}</td>
             <td>{{ fav.total_cost }}</td>
             <td>{{ fav.date_added|date:"Y-m-d H:i" }}</td>
-            <td>
+            <td class="d-flex gap-2">
+              <button class="btn btn-outline-primary btn-sm" style="padding: 0.375rem 0.75rem;" onclick="showQRCode('{{ fav.meal_name }}', '{{ recipes|get_url:fav.meal_name }}')" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h2v2H2V2Zm1 1V2h1v1H3Zm0 1h1v1H3V4Zm2-2h2v2H5V2Zm1 1V2h1v1H6Zm0 1h1v1H6V4Zm2-2h2v2H8V2Zm1 1V2h1v1H9Zm0 1h1v1H9V4Zm2-2h2v2h-2V2Zm1 1V2h1v1h-1Zm0 1h1v1h-1V4ZM2 5h2v2H2V5Zm1 1V5h1v1H3Zm0 1h1v1H3V7Zm2-2h2v2H5V5Zm1 1V5h1v1H6Zm0 1h1v1H6V7Zm2-2h2v2H8V5Zm1 1V5h1v1H9Zm0 1h1v1H9V7Zm2-2h2v2h-2V5Zm1 1V5h1v1h-1Zm0 1h1v1h-1V7ZM2 8h2v2H2V8Zm1 1V8h1v1H3Zm0 1h1v1H3V10Zm2-2h2v2H5V8Zm1 1V8h1v1H6Zm0 1h1v1H6V10Zm2-2h2v2H8V8Zm1 1V8h1v1H9Zm0 1h1v1H9V10Zm2-2h2v2h-2V8Zm1 1V8h1v1h-1Zm0 1h1v1h-1V10ZM2 11h2v2H2v-2Zm1 1v-1h1v1H3Zm0 1h1v1H3v-1Zm2-2h2v2H5v-2Zm1 1v-1h1v1H6Zm0 1h1v1H6v-1Zm2-2h2v2H8v-2Zm1 1v-1h1v1H9Zm0 1h1v1H9v-1Zm2-2h2v2h-2v-2Zm1 1v-1h1v1h-1Zm0 1h1v1h-1v-1Z"/></svg>
+                Tarif Hazırlanışı
+              </button>
               <form method="POST" action="/remove-favorite/" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="favorite_id" value="{{ fav.id }}">
@@ -113,5 +117,41 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 18px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);">
+      <div class="modal-header" style="background: #fff7f0; border-top-left-radius: 18px; border-top-right-radius: 18px;">
+        <h5 class="modal-title d-flex align-items-center gap-2" id="qrCodeModalLabel" style="font-weight: bold; color: #ff5722;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#ff7043" viewBox="0 0 16 16"><path d="M2 2h2v2H2V2Zm1 1V2h1v1H3Zm0 1h1v1H3V4Zm2-2h2v2H5V2Zm1 1V2h1v1H6Zm0 1h1v1H6V4Zm2-2h2v2H8V2Zm1 1V2h1v1H9Zm0 1h1v1H9V4Zm2-2h2v2h-2V2Zm1 1V2h1v1h-1Zm0 1h1v1h-1V4ZM2 5h2v2H2V5Zm1 1V5h1v1H3Zm0 1h1v1H3V7Zm2-2h2v2H5V5Zm1 1V5h1v1H6Zm0 1h1v1H6V7Zm2-2h2v2H8V5Zm1 1V5h1v1H9Zm0 1h1v1H9V7Zm2-2h2v2h-2V5Zm1 1V5h1v1h-1Zm0 1h1v1h-1V7ZM2 8h2v2H2V8Zm1 1V8h1v1H3Zm0 1h1v1H3V10Zm2-2h2v2H5V8Zm1 1V8h1v1H6Zm0 1h1v1H6V10Zm2-2h2v2H8V8Zm1 1V8h1v1H9Zm0 1h1v1H9V10Zm2-2h2v2h-2V8Zm1 1V8h1v1h-1Zm0 1h1v1h-1V10ZM2 11h2v2H2v-2Zm1 1v-1h1v1H3Zm0 1h1v1H3v-1Zm2-2h2v2H5v-2Zm1 1v-1h1v1H6Zm0 1h1v1H6v-1Zm2-2h2v2H8v-2Zm1 1v-1h1v1H9Zm0 1h1v1H9v-1Zm2-2h2v2h-2v-2Zm1 1v-1h1v1h-1Zm0 1h1v1h-1v-1Z"/></svg>
+          <span id="qrCodeModalLabelText">Recipe QR Code</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center d-flex flex-column align-items-center justify-content-center" style="background: #fff7f0; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;">
+        <div id="qrcode" style="display: flex; justify-content: center; align-items: center; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);"></div>
+        <p class="mt-3 mb-0" style="color: #ff5722; font-weight: 500; font-size: 1.1em;">Scan this QR code to view the recipe!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+function showQRCode(recipeName, recipeUrl) {
+  const modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+  document.getElementById('qrCodeModalLabelText').textContent = `${recipeName} QR Code`;
+  // Clear previous QR code
+  document.getElementById('qrcode').innerHTML = '';
+  // Generate new QR code
+  new QRCode(document.getElementById('qrcode'), {
+    text: recipeUrl,
+    width: 200,
+    height: 200
+  });
+  modal.show();
+}
+</script>
 </body>
 </html>
