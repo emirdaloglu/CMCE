@@ -145,11 +145,11 @@ def calculate_with_cost(request):
                 ingredients.append(ingredient_data)
 
             # Save to history (döngü DIŞINDA)
-            MealHistory.objects.create(
-                user=request.user,
-                meal_name=meal_name,
-                total_cost=round(total_cost, 2)
-            )
+                MealHistory.objects.create(
+                    user=request.user,
+                    meal_name=meal_name,
+                    total_cost=round(total_cost, 2)
+                )
 
             return JsonResponse({
                 'meal': meal_name,
